@@ -1,83 +1,83 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const TeacherProfileSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    type: mongoose.ObjectId,
+    ref: "user",
   },
   role: {
     type: String,
-    default: 'TEACHER'
+    default: "TEACHER",
   },
   classes: [
     {
       name: {
-        type: String
+        type: String,
       },
       period: {
-        type: Number
+        type: Number,
       },
       description: {
-        type: String
+        type: String,
       },
       students: [
         {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'student'
-        }
-      ]
-    }
+          type: mongoose.ObjectId,
+          ref: "student",
+        },
+      ],
+    },
   ],
   room: {
-    type: String
+    type: String,
   },
   subject: {
-    type: String
+    type: String,
   },
   skills: {
-    type: [String]
+    type: [String],
   },
   bio: {
-    type: String
+    type: String,
   },
   todos: [
     {
       task: {
-        type: String
+        type: String,
       },
       deadline: {
         type: Date,
-        default: Date.now
+        default: Date.now,
       },
       completed: {
-        type: Boolean
-      }
-    }
+        type: Boolean,
+      },
+    },
   ],
   social: {
     youtube: {
-      type: String
+      type: String,
     },
     twitter: {
-      type: String
+      type: String,
     },
     facebook: {
-      type: String
+      type: String,
     },
     linkedin: {
-      type: String
+      type: String,
     },
     instagram: {
-      type: String
-    }
+      type: String,
+    },
   },
   date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = TeacherProfile = mongoose.model(
-  'teacherprofile',
+  "teacherprofile",
   TeacherProfileSchema
 );

@@ -1,38 +1,38 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../../middleware/auth');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require('config');
-const { check, validationResult } = require('express-validator');
-const mongoose = require('mongoose');
+const auth = require("../../middleware/auth");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const { check, validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
-let axios = require('axios');
+let axios = require("axios");
 
-const TeacherProfile = require('../../models/TeacherProfile');
-const User = require('../../models/User');
-const Student = require('../../models/Student');
+const TeacherProfile = require("../../models/TeacherProfile");
+const User = require("../../models/User");
+const Student = require("../../models/Student");
 
 //@route    GET api/teacherprofile/me
 //@desc     Get current users profile
 //@access   Private
-router.get('/me', auth, async (req, res) => {
+router.get("/me", auth, async (req, res) => {
   try {
     const profile = await TeacherProfile.findOne({
-      user: req.user.id
-    }).populate('user', ['name', 'email', 'avatar']);
+      user: req.user.id,
+    }).populate("user", ["name", "email", "avatar"]);
 
     profile.classes = profile.classes.sort((a, b) =>
       a.period > b.period ? 1 : -1
     );
 
     if (!profile) {
-      return res.status(400).json({ msg: 'There is no profile for this user' });
+      return res.status(400).json({ msg: "There is no profile for this user" });
     }
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
@@ -40,11 +40,11 @@ router.get('/me', auth, async (req, res) => {
 //@desc     Create or update user profile
 //@access   Private
 
-router.post('/', [
+router.post("/", [
   auth,
   [
-    check('subject', 'Subject is required').not().isEmpty(),
-    check('skills', 'Skill(s) is required').not().isEmpty()
+    check("subject", "Subject is required").not().isEmpty(),
+    check("skills", "Skill(s) is required").not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -63,7 +63,7 @@ router.post('/', [
       twitter,
       facebook,
       linkedin,
-      instagram
+      instagram,
     } = req.body;
 
     console.log(req.body);
@@ -75,7 +75,7 @@ router.post('/', [
     if (room) profileFields.room = room;
     if (subject) profileFields.subject = subject;
     if (skills) {
-      profileFields.skills = skills.split(',').map(skill => skill.trim());
+      profileFields.skills = skills.split(",").map((skill) => skill.trim());
     }
     if (bio) profileFields.bio = bio;
     if (classes) profileFields.classes = classes;
@@ -110,22 +110,22 @@ router.post('/', [
       res.json(profile);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      res.status(500).send("Server Error");
     }
-  }
+  },
 ]);
 
 //@route    GET api/user
 //@desc     Get all profiles
 //@access   Public
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const allProfiles = await User.find();
     res.json(allProfiles);
   } catch (err) {
     console.log(err.message);
-    res.status(500).json('Server Error');
+    res.status(500).json("Server Error");
   }
 });
 
@@ -134,20 +134,20 @@ router.get('/', async (req, res) => {
 //@desc     Get profile by user ID
 //@access   Public
 
-router.get('/:user_id', async (req, res) => {
+router.get("/:user_id", async (req, res) => {
   try {
     const profile = await TeacherProfile.findOne({
-      user: req.params.user_id
-    }).populate('user', ['name', 'email', 'avatar']);
-    if (!profile) return res.status(400).json({ msg: 'Profile not found.' });
+      user: req.params.user_id,
+    }).populate("user", ["name", "email", "avatar"]);
+    if (!profile) return res.status(400).json({ msg: "Profile not found." });
 
     res.json(profile);
   } catch (err) {
     console.log(err.message);
-    if (err.kind == 'ObjectId') {
-      return res.status(400).json({ msg: 'Profile not found.' });
+    if (err.kind == "ObjectId") {
+      return res.status(400).json({ msg: "Profile not found." });
     }
-    res.status(500).json('Server Error');
+    res.status(500).json("Server Error");
   }
 });
 
@@ -155,7 +155,7 @@ router.get('/:user_id', async (req, res) => {
 //@desc     DELETE user and posts
 //@access   Private
 
-router.delete('/', auth, async (req, res) => {
+router.delete("/", auth, async (req, res) => {
   try {
     // deletes user's posts
     await Post.deleteMany({ user: req.user.id });
@@ -163,10 +163,10 @@ router.delete('/', auth, async (req, res) => {
     await TeacherProfile.findOneAndRemove({ user: req.user.id });
     // removes user
     await User.findOneAndRemove({ _id: req.user.id });
-    res.json({ msg: 'user removed ' });
+    res.json({ msg: "user removed " });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json('Server Error');
+    res.status(500).json("Server Error");
   }
 });
 
@@ -175,14 +175,14 @@ router.delete('/', auth, async (req, res) => {
 //@access   Private
 
 router.put(
-  '/classes',
+  "/classes",
   [
     auth,
     [
-      check('name', 'Period is required').not().isEmpty(),
-      check('period', 'Period is required').not().isEmpty(),
-      check('description', 'description is required').not().isEmpty()
-    ]
+      check("name", "Period is required").not().isEmpty(),
+      check("period", "Period is required").not().isEmpty(),
+      check("description", "description is required").not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -191,10 +191,10 @@ router.put(
     }
 
     let students = await axios.get(
-      'https://api.mockaroo.com/api/0f76e990?count=30&key=818fe000'
+      "https://api.mockaroo.com/api/0f76e990?count=30&key=818fe000"
     );
 
-    console.log('students are', students);
+    console.log("students are", students);
 
     let s_count = students.data.length - 1;
     let s_curr_count = 0;
@@ -222,7 +222,7 @@ router.put(
             s_array.push(s);
             s_curr_count++;
             if (s_curr_count == s_count) {
-              resolve('done');
+              resolve("done");
             }
           }
         });
@@ -241,7 +241,7 @@ router.put(
           name,
           period,
           description,
-          students
+          students,
         };
 
         try {
@@ -252,9 +252,9 @@ router.put(
           await profile.save();
 
           TeacherProfile.findOne({
-            user: req.user.id
+            user: req.user.id,
           })
-            .populate('classes.students', ['name', 'grade', 'email'])
+            .populate("classes.students", ["name", "grade", "email"])
             .exec(function (err, teacher) {
               if (err) {
                 res.json(err);
@@ -266,7 +266,7 @@ router.put(
           //await p.populate('students').execPopulate()
         } catch (err) {
           console.error(err.message);
-          res.status(500).send('Server Error');
+          res.status(500).send("Server Error");
         }
       });
     } catch (e) {
@@ -280,13 +280,13 @@ router.put(
 //@desc     Deletes a class period
 //@access   Private
 
-router.delete('/classes/:class_id', auth, async (req, res) => {
+router.delete("/classes/:class_id/:", auth, async (req, res) => {
   try {
     const profile = await TeacherProfile.findOne({ user: req.user.id });
 
     // get remove index
     const removeIndex = profile.classes
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.class_id);
 
     profile.classes.splice(removeIndex, 1);
@@ -295,7 +295,7 @@ router.delete('/classes/:class_id', auth, async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
@@ -304,8 +304,8 @@ router.delete('/classes/:class_id', auth, async (req, res) => {
 //@access   Private
 
 router.put(
-  '/todos',
-  [auth, [check('task', 'Task is required').not().isEmpty()]],
+  "/todos",
+  [auth, [check("task", "Task is required").not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -317,7 +317,7 @@ router.put(
     const newTodo = {
       task,
       deadline,
-      completed
+      completed,
     };
 
     try {
@@ -330,11 +330,31 @@ router.put(
       res.json(profile);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      res.status(500).send("Server Error");
     }
   }
 );
 
 // ROUTE TO GET STUDENTS BY CLASS PERIOD
+router.get("/classes/:class_id", auth, async (req, res) => {
+  try {
+    const profile = await TeacherProfile.findOne({
+      user: req.user.id,
+    }).populate("classes.students", ["name", "grade", "email"]);
+
+    console.log(profile.classes);
+
+    // get class index
+    const classIndex = profile.classes
+      .map((item) => item._id)
+      .indexOf(req.params.class_id);
+
+    const students = profile.classes[classIndex].students;
+    res.json(students);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 
 module.exports = router;
