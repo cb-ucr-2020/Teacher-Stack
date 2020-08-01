@@ -9,3 +9,8 @@ User should, after cloning the repo, first run "npm i" to install dependencies. 
 
 # Functions
 User is able to make an account that has password encryption. Because the user will not have a profile made they will be directed to make a profile. They will input things like their room number, name, a bio, skills, and what subject they teach. A profile image is automatically generated using Faker API. User is then able to edit their profile, Add a todo to their todo list, and also generate a class. At this point in time the class is generated using dummy data. There is also a modal that can be brought up containing the student's profile. The last two functions are very similar. User is able to view all profiles and see a list of other teachers skills, as well as view the other teacher's profile. The forum is a palce where teachers are able to pose a question, comment, or concern that other teachers can then responsd too. 
+
+# Heroku
+App is deployed to heroku and uses MongoDB Atlas AWS free server.
+
+https://protected-retreat-55339.herokuapp.com/
