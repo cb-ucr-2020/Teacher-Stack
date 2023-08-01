@@ -19,6 +19,9 @@
   "bugs": {
     "url": "https://github.com/cb-ucr-2020/teacher-stack.github.io/issues"
   },
+    "engines": {
+    "node": "14.x",
+  },
   "homepage": "https://github.com/cb-ucr-2020/teacher-stack.github.io#readme",
   "dependencies": {
     "axios": "^0.19.2",
